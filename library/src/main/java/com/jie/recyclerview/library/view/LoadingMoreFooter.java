@@ -1,4 +1,4 @@
-package com.jie.recyclerview.library;
+package com.jie.recyclerview.library.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.jie.recyclerview.library.R;
 import com.jie.recyclerview.library.progressindicator.AVLoadingIndicatorView;
 
 

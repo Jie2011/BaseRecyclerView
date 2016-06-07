@@ -1,28 +1,45 @@
 package com.jie.recyclerview.library.adapter;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
+
+import com.jie.recyclerview.library.adapter.holder.BaseRecyclerViewHolder;
+
+import java.util.List;
 
 /**
  * Created by liumingjie on 2016/6/6.
  */
-public class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+public abstract class BaseRecyclerViewAdapter<T> extends RecyclerView.Adapter<BaseRecyclerViewHolder> {
 
-    public BaseRecyclerViewAdapter() {
+    protected Context mContext;
+    protected List<T> mList;
+
+    public BaseRecyclerViewAdapter(){
+
+    }
+
+    public BaseRecyclerViewAdapter(Context context) {
+        this.mContext = context;
+    }
+
+    public BaseRecyclerViewAdapter(Context context, List<T> list) {
+        this(context);
+        this.mList = list;
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return mList == null ? 0 : mList.size();
     }
 
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return null;
+    public abstract BaseRecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType);
+
+    public void onBindViewHolder(BaseRecyclerViewHolder holder, int position){
+        if(mList != null) {
+            holder.setData(mList.get(position));
+        }
     }
 
-    @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
-    }
 }

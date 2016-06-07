@@ -1,4 +1,4 @@
-package com.jie.recyclerview.library;
+package com.jie.recyclerview.library.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * Created by jianghejie on 15/11/22.
+ * Created by liumingjie on 06/06/07.
  */
 public class SimpleViewSwitcher extends ViewGroup {
 

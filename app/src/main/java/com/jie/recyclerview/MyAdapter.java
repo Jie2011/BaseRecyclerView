@@ -1,43 +1,45 @@
 package com.jie.recyclerview;
 
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
+import android.content.Context;
+import android.support.annotation.LayoutRes;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.jie.recyclerview.library.adapter.BaseRecyclerViewAdapter;
+import com.jie.recyclerview.library.adapter.holder.BaseRecyclerViewHolder;
 
 import java.util.ArrayList;
 
 /**
- * Created by jianghejie on 15/11/26.
+ * Created by liumingjie on 15/11/26.
  */
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
-    public ArrayList<String> datas = null;
-    public MyAdapter(ArrayList<String> datas) {
-        this.datas = datas;
+public class MyAdapter extends BaseRecyclerViewAdapter<String> {
+
+    public MyAdapter(Context context,ArrayList<String> datas) {
+        super(context,datas);
     }
     //创建新View，被LayoutManager所调用
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item,viewGroup,false);
-        return new ViewHolder(view);
+    public BaseRecyclerViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        return new ViewHolder(viewGroup,R.layout.item);
     }
-    //将数据与界面进行绑定的操作
-    @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int position) {
-        viewHolder.mTextView.setText(datas.get(position));
-    }
-    //获取数据的数量
-    @Override
-    public int getItemCount() {
-        return datas.size();
-    }
+
     //自定义的ViewHolder，持有每个Item的的所有界面元素
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends BaseRecyclerViewHolder<String> {
         public TextView mTextView;
-        public ViewHolder(View view){
-            super(view);
-            mTextView = (TextView) view.findViewById(R.id.text);
+
+        public ViewHolder(ViewGroup parent, @LayoutRes int res) {
+            super(parent, res);
+        }
+
+        @Override
+        public void initView() {
+            mTextView = $(R.id.text);
+        }
+
+        @Override
+        public void setData(String data) {
+            mTextView.setText(data);
         }
     }
 }

@@ -7,12 +7,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.jie.recyclerview.library.XRecyclerView;
+import com.jie.recyclerview.library.view.CustomRecyclerView;
 
 import java.util.ArrayList;
 
 public class EmptyViewActivity extends Activity {
-    private XRecyclerView mRecyclerView;
+    private CustomRecyclerView mRecyclerView;
     private MyAdapter mAdapter;
     private ArrayList<String> listData;
     private View mEmptyView;
@@ -20,7 +20,7 @@ public class EmptyViewActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recyclerview);
-        mRecyclerView = (XRecyclerView)this.findViewById(R.id.recyclerview);
+        mRecyclerView = (CustomRecyclerView)this.findViewById(R.id.recyclerview);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
@@ -31,7 +31,7 @@ public class EmptyViewActivity extends Activity {
 
         //没有数据，触发emptyView
         listData = new  ArrayList<String>();
-        mAdapter = new MyAdapter(listData);
+        mAdapter = new MyAdapter(this,listData);
 
         mRecyclerView.setAdapter(mAdapter);
     }

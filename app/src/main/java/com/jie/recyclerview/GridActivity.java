@@ -10,13 +10,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.jie.recyclerview.library.ProgressStyle;
-import com.jie.recyclerview.library.XRecyclerView;
+import com.jie.recyclerview.library.divider.HorizontalDividerFactory;
+import com.jie.recyclerview.library.divider.VerticalDividerFactory;
+import com.jie.recyclerview.library.view.ProgressStyle;
+import com.jie.recyclerview.library.view.CustomRecyclerView;
 
 import java.util.ArrayList;
 
 public class GridActivity extends Activity {
-    private XRecyclerView mRecyclerView;
+    private CustomRecyclerView mRecyclerView;
     private MyAdapter mAdapter;
     private ArrayList<String> listData;
     private int refreshTime = 0;
@@ -26,7 +28,7 @@ public class GridActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recyclerview);
-        mRecyclerView = (XRecyclerView)this.findViewById(R.id.recyclerview);
+        mRecyclerView = (CustomRecyclerView)this.findViewById(R.id.recyclerview);
         GridLayoutManager layoutManager = new GridLayoutManager(this,3);
 
         mRecyclerView.setLayoutManager(layoutManager);
@@ -37,8 +39,9 @@ public class GridActivity extends Activity {
 
         View header =   LayoutInflater.from(this).inflate(R.layout.recyclerview_header, (ViewGroup)findViewById(android.R.id.content),false);
         mRecyclerView.addHeaderView(header);
-
-        mRecyclerView.setLoadingListener(new XRecyclerView.LoadingListener() {
+        mRecyclerView.addItemDecoration(VerticalDividerFactory.newInstance(this).createDividerByColorId(R.color.colorPrimaryDark,1,true));
+        mRecyclerView.addItemDecoration(HorizontalDividerFactory.newInstance(this).createDividerByColorId(R.color.colorPrimaryDark,1,true));
+        mRecyclerView.setLoadingListener(new CustomRecyclerView.LoadingListener() {
             @Override
             public void onRefresh() {
                 refreshTime ++;
@@ -87,7 +90,7 @@ public class GridActivity extends Activity {
         for(int i = 0; i < 20 ;i++){
             listData.add("item" + (i + listData.size()) );
         }
-        mAdapter = new MyAdapter(listData);
+        mAdapter = new MyAdapter(this,listData);
 
         mRecyclerView.setAdapter(mAdapter);
     }

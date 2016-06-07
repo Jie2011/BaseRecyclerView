@@ -1,7 +1,7 @@
-package com.jie.recyclerview.library;
+package com.jie.recyclerview.library.view;
 
 /**
- * Created by jianghejie on 15/11/23.
+ * Created by liumingjie on 06/06/07.
  */
 public class ProgressStyle {
     public static final int SysProgress=-1;

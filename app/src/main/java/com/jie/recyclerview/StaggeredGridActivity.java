@@ -11,13 +11,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.jie.recyclerview.library.ProgressStyle;
-import com.jie.recyclerview.library.XRecyclerView;
+import com.jie.recyclerview.library.view.ProgressStyle;
+import com.jie.recyclerview.library.view.CustomRecyclerView;
 
 import java.util.ArrayList;
 
 public class StaggeredGridActivity extends Activity {
-    private XRecyclerView mRecyclerView;
+    private CustomRecyclerView mRecyclerView;
     private MyAdapter mAdapter;
     private ArrayList<String> listData;
     private int refreshTime = 0;
@@ -26,7 +26,7 @@ public class StaggeredGridActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recyclerview);
-        mRecyclerView = (XRecyclerView)this.findViewById(R.id.recyclerview);
+        mRecyclerView = (CustomRecyclerView)this.findViewById(R.id.recyclerview);
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager( 3,
                 StaggeredGridLayoutManager.VERTICAL);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -39,7 +39,7 @@ public class StaggeredGridActivity extends Activity {
         View header =   LayoutInflater.from(this).inflate(R.layout.recyclerview_header, (ViewGroup)findViewById(android.R.id.content),false);
         mRecyclerView.addHeaderView(header);
 
-        mRecyclerView.setLoadingListener(new XRecyclerView.LoadingListener() {
+        mRecyclerView.setLoadingListener(new CustomRecyclerView.LoadingListener() {
             @Override
             public void onRefresh() {
                 refreshTime ++;
@@ -88,7 +88,7 @@ public class StaggeredGridActivity extends Activity {
         for(int i = 0; i < 25 ;i++){
             listData.add("item" + (i + listData.size()) );
         }
-        mAdapter = new MyAdapter(listData);
+        mAdapter = new MyAdapter(this,listData);
 
         mRecyclerView.setAdapter(mAdapter);
     }

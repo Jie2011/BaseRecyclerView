@@ -1,4 +1,4 @@
-package com.jie.recyclerview.library;
+package com.jie.recyclerview.library.view;
 
 import android.content.Context;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-public class XRecyclerView extends RecyclerView {
+public class CustomRecyclerView extends RecyclerView {
 
     private boolean isLoadingData = false;
     private boolean isNoMore = false;
@@ -41,15 +41,15 @@ public class XRecyclerView extends RecyclerView {
     private OnItemClickListener mItemClickListener;
     private OnItemLongClickListener mItemLongClickListener;
 
-    public XRecyclerView(Context context) {
+    public CustomRecyclerView(Context context) {
         this(context, null);
     }
 
-    public XRecyclerView(Context context, AttributeSet attrs) {
+    public CustomRecyclerView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public XRecyclerView(Context context, AttributeSet attrs, int defStyle) {
+    public CustomRecyclerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
     }
@@ -275,10 +275,10 @@ public class XRecyclerView extends RecyclerView {
                 }
                 if (adapter.getItemCount() == emptyCount) {
                     mEmptyView.setVisibility(View.VISIBLE);
-                    XRecyclerView.this.setVisibility(View.GONE);
+                    CustomRecyclerView.this.setVisibility(View.GONE);
                 } else {
                     mEmptyView.setVisibility(View.GONE);
-                    XRecyclerView.this.setVisibility(View.VISIBLE);
+                    CustomRecyclerView.this.setVisibility(View.VISIBLE);
                 }
             }
             if (mWrapAdapter != null) {

@@ -1,7 +1,7 @@
-package com.jie.recyclerview.library;
+package com.jie.recyclerview.library.view;
 
 /**
- * Created by jianghejie on 15/11/22.
+ * Created by liumignjie on 16/06/07
  */
 interface BaseRefreshHeader {
 

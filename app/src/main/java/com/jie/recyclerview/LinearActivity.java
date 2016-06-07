@@ -9,14 +9,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
-import com.jie.recyclerview.library.ProgressStyle;
-import com.jie.recyclerview.library.XRecyclerView;
+import com.jie.recyclerview.library.divider.HorizontalDividerFactory;
+import com.jie.recyclerview.library.view.ProgressStyle;
+import com.jie.recyclerview.library.view.CustomRecyclerView;
 
 import java.util.ArrayList;
 
 public class LinearActivity extends Activity {
-    private XRecyclerView mRecyclerView;
+    private CustomRecyclerView mRecyclerView;
     private MyAdapter mAdapter;
     private ArrayList<String> listData;
     private int refreshTime = 0;
@@ -25,7 +27,7 @@ public class LinearActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recyclerview);
-        mRecyclerView = (XRecyclerView)this.findViewById(R.id.recyclerview);
+        mRecyclerView = (CustomRecyclerView)this.findViewById(R.id.recyclerview);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
@@ -37,7 +39,7 @@ public class LinearActivity extends Activity {
         View header =   LayoutInflater.from(this).inflate(R.layout.recyclerview_header, (ViewGroup)findViewById(android.R.id.content),false);
         mRecyclerView.addHeaderView(header);
 
-        mRecyclerView.setLoadingListener(new XRecyclerView.LoadingListener() {
+        mRecyclerView.setLoadingListener(new CustomRecyclerView.LoadingListener() {
             @Override
             public void onRefresh() {
                 refreshTime ++;
@@ -86,10 +88,18 @@ public class LinearActivity extends Activity {
         for(int i = 0; i < 15 ;i++){
             listData.add("item" + (i + listData.size()) );
         }
-        mAdapter = new MyAdapter(listData);
+        mAdapter = new MyAdapter(this,listData);
 
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setRefreshing(true);
+        mRecyclerView.setOnItemClickListener(new CustomRecyclerView.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+
+                Toast.makeText(LinearActivity.this, "click:" + position, Toast.LENGTH_SHORT).show();
+            }
+        });
+        mRecyclerView.addItemDecoration(HorizontalDividerFactory.newInstance(this).createDividerByColorId(R.color.colorPrimaryDark,1,true));
     }
 
     @Override

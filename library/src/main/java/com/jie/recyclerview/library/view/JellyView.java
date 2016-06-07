@@ -1,7 +1,7 @@
-package com.jie.recyclerview.library;
+package com.jie.recyclerview.library.view;
 
 /**
- * Created by jianghejie on 15/11/22.
+ * Created by liumingjie on 06/06/07.
  */
 
 import android.annotation.TargetApi;
@@ -15,7 +15,7 @@ import android.util.Log;
 import android.view.View;
 
 
-public class JellyView extends View  implements BaseRefreshHeader{
+public class JellyView extends View  implements BaseRefreshHeader {
     Path path;
 
     Paint paint;
