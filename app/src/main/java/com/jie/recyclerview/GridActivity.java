@@ -39,7 +39,7 @@ public class GridActivity extends Activity {
 
         View header =   LayoutInflater.from(this).inflate(R.layout.recyclerview_header, (ViewGroup)findViewById(android.R.id.content),false);
         mRecyclerView.addHeaderView(header);
-        mRecyclerView.addItemDecoration(VerticalDividerFactory.newInstance(this).createDividerByColorId(R.color.colorPrimaryDark,1,true));
+        mRecyclerView.addItemDecoration(VerticalDividerFactory.newInstance(this).createDividerByColorId(R.color.colorPrimaryDark,1,false));
         mRecyclerView.addItemDecoration(HorizontalDividerFactory.newInstance(this).createDividerByColorId(R.color.colorPrimaryDark,1,true));
         mRecyclerView.setLoadingListener(new CustomRecyclerView.LoadingListener() {
             @Override

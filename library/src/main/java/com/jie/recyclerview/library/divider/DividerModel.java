@@ -13,6 +13,4 @@ public class DividerModel {
     private int leftMargin;
     private int rightMargin;
     private boolean isNeedShowLast;
-
-
 }

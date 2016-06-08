@@ -116,6 +116,10 @@ public abstract class FlexibleDividerDecoration extends RecyclerView.ItemDecorat
 
             int groupIndex = getGroupIndex(childPosition, parent);
             if (mVisibilityProvider.shouldHideDivider(groupIndex, parent)) {
+                Paint paint = new Paint();
+                paint.setColor(mColorProvider.dividerColor(groupIndex, parent));
+                paint.setStrokeWidth(100);
+                c.drawLine(0, 0, 0, 0, paint);
                 continue;
             }
 

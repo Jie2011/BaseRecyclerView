@@ -10,6 +10,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.jie.recyclerview.library.R;
+import com.jie.recyclerview.library.divider.FlexibleDividerDecoration;
+import com.jie.recyclerview.library.divider.HorizontalDividerItemDecoration;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -167,6 +171,11 @@ public class CustomRecyclerView extends RecyclerView {
     public void setAdapter(Adapter adapter) {
         mWrapAdapter = new WrapAdapter(adapter);
         super.setAdapter(mWrapAdapter);
+        this.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getContext())
+                .visibilityProvider((FlexibleDividerDecoration.VisibilityProvider) mWrapAdapter)
+                .colorResId(R.color.colorAccent)
+                .size(20)
+                .build());
         adapter.registerAdapterDataObserver(mDataObserver);
         mDataObserver.onChanged();
     }
@@ -332,7 +341,7 @@ public class CustomRecyclerView extends RecyclerView {
         }
     }
 
-    private class WrapAdapter extends RecyclerView.Adapter<ViewHolder> {
+    private class WrapAdapter extends RecyclerView.Adapter<ViewHolder> implements FlexibleDividerDecoration.VisibilityProvider{
 
         private RecyclerView.Adapter adapter;
 
@@ -493,6 +502,18 @@ public class CustomRecyclerView extends RecyclerView {
             public SimpleViewHolder(View itemView) {
                 super(itemView);
             }
+        }
+
+        @Override
+        public boolean shouldHideDivider(int position, RecyclerView parent) {
+            if(mHeaderViews != null && mHeaderViews.size()>0){
+                for(int i = 0;i<mHeaderViews.size();i++){
+                    if(position == i) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 
