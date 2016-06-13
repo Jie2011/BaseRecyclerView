@@ -10,9 +10,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.jie.recyclerview.library.R;
 import com.jie.recyclerview.library.divider.FlexibleDividerDecoration;
 import com.jie.recyclerview.library.divider.HorizontalDividerItemDecoration;
+import com.jie.recyclerview.library.divider.VerticalDividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -173,8 +173,9 @@ public class CustomRecyclerView extends RecyclerView {
         super.setAdapter(mWrapAdapter);
         this.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getContext())
                 .visibilityProvider((FlexibleDividerDecoration.VisibilityProvider) mWrapAdapter)
-                .colorResId(R.color.colorAccent)
-                .size(20)
+                .build());
+        this.addItemDecoration(new VerticalDividerItemDecoration.Builder(getContext()).
+                visibilityProvider((FlexibleDividerDecoration.VisibilityProvider) mWrapAdapter)
                 .build());
         adapter.registerAdapterDataObserver(mDataObserver);
         mDataObserver.onChanged();

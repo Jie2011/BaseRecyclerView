@@ -116,10 +116,6 @@ public abstract class FlexibleDividerDecoration extends RecyclerView.ItemDecorat
 
             int groupIndex = getGroupIndex(childPosition, parent);
             if (mVisibilityProvider.shouldHideDivider(groupIndex, parent)) {
-                Paint paint = new Paint();
-                paint.setColor(mColorProvider.dividerColor(groupIndex, parent));
-                paint.setStrokeWidth(100);
-                c.drawLine(0, 0, 0, 0, paint);
                 continue;
             }
 
@@ -153,7 +149,16 @@ public abstract class FlexibleDividerDecoration extends RecyclerView.ItemDecorat
             return;
         }
 
+        if (wasDividerAlreadyDrawn(position, parent)) {
+            // No need to draw divider again as it was drawn already by previous column
+            return;
+        }
         int groupIndex = getGroupIndex(position, parent);
+
+        if (mVisibilityProvider.shouldHideDivider(groupIndex, parent)){
+            return;
+        }
+
         setItemOffsets(rect, groupIndex, parent);
     }
 
@@ -488,6 +493,6 @@ public abstract class FlexibleDividerDecoration extends RecyclerView.ItemDecorat
             }
         }
 
-        protected abstract FlexibleDividerDecoration build();
+        public abstract FlexibleDividerDecoration build();
     }
 }

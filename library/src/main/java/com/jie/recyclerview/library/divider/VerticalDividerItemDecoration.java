@@ -41,6 +41,7 @@ public class VerticalDividerItemDecoration extends FlexibleDividerDecoration {
                 bounds.right = bounds.left + dividerSize;
             }
         } else {
+
             // set center point of divider
             if (mPositionInsideItem) {
                 bounds.left = child.getRight() + params.leftMargin - dividerSize / 2 + transitionX;
@@ -49,7 +50,6 @@ public class VerticalDividerItemDecoration extends FlexibleDividerDecoration {
             }
             bounds.right = bounds.left;
         }
-
         return bounds;
     }
 
