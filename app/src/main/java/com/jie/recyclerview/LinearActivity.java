@@ -99,7 +99,7 @@ public class LinearActivity extends Activity {
                 Toast.makeText(LinearActivity.this, "click:" + position, Toast.LENGTH_SHORT).show();
             }
         });
-        mRecyclerView.addItemDecoration(HorizontalDividerFactory.newInstance(this).createDividerByColorId(R.color.colorAccent, 10, false));
+        mRecyclerView.addItemDecoration(HorizontalDividerFactory.newInstance(this).createDividerByColorId(R.color.colorAccent, 1, false));
     }
 
     @Override
