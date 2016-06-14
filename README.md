@@ -1,6 +1,6 @@
-自定义recyclerview下拉刷新开源框架
-1，封装下拉刷新recyclerView控件和adapter层
-2，封装ItemDecoration层，参考了（https://github.com/yqritc/RecyclerView-FlexibleDivider）
+#  自定义recyclerview下拉刷新开源框架<br />
+1，封装下拉刷新recyclerView控件和adapter层<br />
+2，封装ItemDecoration层，参考了（https://github.com/yqritc/RecyclerView-FlexibleDivider）<br />
 
 使用方法：
 
