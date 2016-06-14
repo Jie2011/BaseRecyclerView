@@ -1,8 +1,16 @@
 #  自定义recyclerview下拉刷新开源框架<br />
 1，封装下拉刷新recyclerView控件和adapter层<br />
-2，封装ItemDecoration层，参考了（https://github.com/yqritc/RecyclerView-FlexibleDivider）<br />
+   （1）下拉刷新可以自定义刷新的icon <br />
+   （2）可以添加多个headerview和footerview <br />
+   （3）封装了adapter层，adapter继承BaseRecyclerViewAdapter<T>，T为泛型列表展示的数据model <br />
+   
+2，封装ItemDecoration层，参考了（https://github.com/yqritc/RecyclerView-FlexibleDivider），可以自己显示的调用FlexibleDividerDecoration    和VerticalDividerItemDecoration，这里利用工厂模式只是封装了简单的<br />
+   （1）AbstractDividerFactory为抽象类封装了根据颜色和drawable绘制divider <br />
+   （2）HorizontalDividerFactory绘制横向的divider <br />
+   （3）VerticalDividerFactory绘制垂直方向的divider <br />
+    
 
-使用方法：
+3，recycler使用方法：
 
         mRecyclerView = (CustomRecyclerView)this.findViewById(R.id.recyclerview);   //自定义recyclerview
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -65,3 +73,6 @@
                 times ++;
             }
         });
+        
+
+     
