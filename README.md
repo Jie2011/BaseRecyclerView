@@ -3,6 +3,7 @@
 2，封装ItemDecoration层，参考了（https://github.com/yqritc/RecyclerView-FlexibleDivider）
 
 使用方法：
+
         mRecyclerView = (CustomRecyclerView)this.findViewById(R.id.recyclerview);   //自定义recyclerview
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
