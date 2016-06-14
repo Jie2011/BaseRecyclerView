@@ -19,16 +19,77 @@ public class VerticalDividerItemDecoration extends FlexibleDividerDecoration {
         mMarginProvider = builder.mMarginProvider;
     }
 
+    /*@Override
+    public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+        CustomRecyclerView customRecyclerView = null;
+        if (parent instanceof CustomRecyclerView) {
+            customRecyclerView = (CustomRecyclerView) parent;
+        }
+        RecyclerView.Adapter adapter = parent.getAdapter();
+        if (adapter == null) {
+            return;
+        }
+
+        int itemCount = adapter.getItemCount();
+        int lastDividerOffset = getLastDividerOffset(parent);
+        int validChildCount = parent.getChildCount();
+        int lastChildPosition = -1;
+       *//* if (customRecyclerView != null) {
+            validChildCount = validChildCount - customRecyclerView.getHeadersCount();
+        }*//*
+        for (int i = 0; i <= validChildCount; i++) {
+
+            View child = parent.getChildAt(i);
+            if (child == null) {
+                continue;
+            }
+            int childPosition = parent.getChildAdapterPosition(child);
+
+            if (childPosition < lastChildPosition) {
+                // Avoid remaining divider when animation starts
+                continue;
+            }
+            lastChildPosition = childPosition;
+
+            if (!mShowLastDivider && childPosition >= itemCount - lastDividerOffset) {
+                // Don't draw divider for last line if mShowLastDivider = false
+                continue;
+            }
+
+            int groupIndex = getGroupIndex(childPosition, parent);
+            if (mVisibilityProvider.shouldHideDivider(groupIndex, parent)) {
+                continue;
+            }
+            Rect bounds = getDividerBound(groupIndex, parent, child);
+            switch (mDividerType) {
+                case DRAWABLE:
+                    Drawable drawable = mDrawableProvider.drawableProvider(groupIndex, parent);
+                    drawable.setBounds(bounds);
+                    drawable.draw(c);
+                    break;
+                case PAINT:
+                    mPaint = mPaintProvider.dividerPaint(groupIndex, parent);
+                    c.drawLine(bounds.left, bounds.top, bounds.right, bounds.bottom, mPaint);
+                    break;
+                case COLOR:
+                    mPaint.setColor(mColorProvider.dividerColor(groupIndex, parent));
+                    mPaint.setStrokeWidth(mSizeProvider.dividerSize(groupIndex, parent));
+                    c.drawLine(bounds.left, bounds.top, bounds.right, bounds.bottom, mPaint);
+                    break;
+            }
+        }
+    }*/
+
     @Override
     protected Rect getDividerBound(int position, RecyclerView parent, View child) {
         Rect bounds = new Rect(0, 0, 0, 0);
         int transitionX = (int) ViewCompat.getTranslationX(child);
         int transitionY = (int) ViewCompat.getTranslationY(child);
         RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
-        bounds.top = parent.getPaddingTop() +
-                mMarginProvider.dividerLeftOrTopMargin(position, parent) + transitionY;
-        bounds.bottom = parent.getHeight() - parent.getPaddingBottom() -
-                mMarginProvider.dividerRightOrBottomMargin(position, parent) + transitionY;
+        bounds.top = child.getTop() +
+                mMarginProvider.dividerLeftOrTopMargin(position, parent);
+        bounds.bottom = child.getBottom() -
+                mMarginProvider.dividerRightOrBottomMargin(position, parent);
 
         int dividerSize = getDividerSize(position, parent);
         if (mDividerType == DividerType.DRAWABLE) {
@@ -73,7 +134,6 @@ public class VerticalDividerItemDecoration extends FlexibleDividerDecoration {
         }
         throw new RuntimeException("failed to get size");
     }
-
 
 
     public static class Builder extends FlexibleDividerDecoration.Builder<Builder> {

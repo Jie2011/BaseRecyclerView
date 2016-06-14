@@ -11,8 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.jie.recyclerview.library.divider.FlexibleDividerDecoration;
-import com.jie.recyclerview.library.divider.HorizontalDividerItemDecoration;
-import com.jie.recyclerview.library.divider.VerticalDividerItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -171,12 +169,6 @@ public class CustomRecyclerView extends RecyclerView {
     public void setAdapter(Adapter adapter) {
         mWrapAdapter = new WrapAdapter(adapter);
         super.setAdapter(mWrapAdapter);
-        this.addItemDecoration(new HorizontalDividerItemDecoration.Builder(getContext())
-                .visibilityProvider((FlexibleDividerDecoration.VisibilityProvider) mWrapAdapter)
-                .build());
-        this.addItemDecoration(new VerticalDividerItemDecoration.Builder(getContext()).
-                visibilityProvider((FlexibleDividerDecoration.VisibilityProvider) mWrapAdapter)
-                .build());
         adapter.registerAdapterDataObserver(mDataObserver);
         mDataObserver.onChanged();
     }
@@ -555,4 +547,11 @@ public class CustomRecyclerView extends RecyclerView {
         mWrapAdapter.notifyDataSetChanged();
     }
 
+    public int getHeadersCount() {
+        return mHeaderViews.size();
+    }
+
+    public ArrayList<View> getHeaderViews() {
+        return mHeaderViews;
+    }
 }

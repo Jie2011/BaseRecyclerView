@@ -13,7 +13,12 @@ import android.support.annotation.DrawableRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
+
+import com.jie.recyclerview.library.view.CustomRecyclerView;
+
+import java.util.ArrayList;
 
 /**
  * Created by liumingjie on 2016/06/07.
@@ -30,14 +35,14 @@ public abstract class FlexibleDividerDecoration extends RecyclerView.ItemDecorat
     }
 
     protected DividerType mDividerType = DividerType.DRAWABLE;
-    protected VisibilityProvider mVisibilityProvider;
+    protected WrapVisibilityProvider mVisibilityProvider;
     protected PaintProvider mPaintProvider;
     protected ColorProvider mColorProvider;
     protected DrawableProvider mDrawableProvider;
     protected SizeProvider mSizeProvider;
     protected boolean mShowLastDivider;
     protected boolean mPositionInsideItem;
-    private Paint mPaint;
+    protected Paint mPaint;
 
     protected FlexibleDividerDecoration(Builder builder) {
         if (builder.mPaintProvider != null) {
@@ -66,7 +71,7 @@ public abstract class FlexibleDividerDecoration extends RecyclerView.ItemDecorat
             mSizeProvider = builder.mSizeProvider;
         }
 
-        mVisibilityProvider = builder.mVisibilityProvider;
+        mVisibilityProvider = new WrapVisibilityProvider(builder.mVisibilityProvider);
         mShowLastDivider = builder.mShowLastDivider;
         mPositionInsideItem = builder.mPositionInsideItem;
     }
@@ -85,6 +90,11 @@ public abstract class FlexibleDividerDecoration extends RecyclerView.ItemDecorat
 
     @Override
     public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+        CustomRecyclerView customRecyclerView = null;
+        if (parent instanceof CustomRecyclerView) {
+            customRecyclerView = (CustomRecyclerView) parent;
+            mVisibilityProvider.setHeaderViews(customRecyclerView.getHeaderViews());
+        }
         RecyclerView.Adapter adapter = parent.getAdapter();
         if (adapter == null) {
             return;
@@ -109,16 +119,16 @@ public abstract class FlexibleDividerDecoration extends RecyclerView.ItemDecorat
                 continue;
             }
 
-            if (wasDividerAlreadyDrawn(childPosition, parent)) {
+          /*  if (wasDividerAlreadyDrawn(childPosition, parent)) {
                 // No need to draw divider again as it was drawn already by previous column
                 continue;
-            }
+            }*/
 
             int groupIndex = getGroupIndex(childPosition, parent);
             if (mVisibilityProvider.shouldHideDivider(groupIndex, parent)) {
                 continue;
             }
-
+            Log.e("index","groupIndex:"+groupIndex);
             Rect bounds = getDividerBound(groupIndex, parent, child);
             switch (mDividerType) {
                 case DRAWABLE:
@@ -173,7 +183,7 @@ public abstract class FlexibleDividerDecoration extends RecyclerView.ItemDecorat
      * @return offset for how many views we don't have to draw a divider or 1 if its a
      * LinearLayoutManager
      */
-    private int getLastDividerOffset(RecyclerView parent) {
+    protected int getLastDividerOffset(RecyclerView parent) {
         if (parent.getLayoutManager() instanceof GridLayoutManager) {
             GridLayoutManager layoutManager = (GridLayoutManager) parent.getLayoutManager();
             GridLayoutManager.SpanSizeLookup spanSizeLookup = layoutManager.getSpanSizeLookup();
@@ -216,7 +226,7 @@ public abstract class FlexibleDividerDecoration extends RecyclerView.ItemDecorat
      * @param parent   RecyclerView
      * @return group index of items
      */
-    private int getGroupIndex(int position, RecyclerView parent) {
+    protected int getGroupIndex(int position, RecyclerView parent) {
         if (parent.getLayoutManager() instanceof GridLayoutManager) {
             GridLayoutManager layoutManager = (GridLayoutManager) parent.getLayoutManager();
             GridLayoutManager.SpanSizeLookup spanSizeLookup = layoutManager.getSpanSizeLookup();
@@ -244,6 +254,35 @@ public abstract class FlexibleDividerDecoration extends RecyclerView.ItemDecorat
          * @return True if the divider at position should be hidden
          */
         boolean shouldHideDivider(int position, RecyclerView parent);
+    }
+
+    /**
+     * 过滤掉headerview的
+     */
+    protected class WrapVisibilityProvider implements VisibilityProvider{
+
+        private VisibilityProvider visibilityProvider;
+        private ArrayList<View> mHeaderViews = new ArrayList<>();
+
+        public WrapVisibilityProvider(VisibilityProvider visibilityProvider){
+            this.visibilityProvider = visibilityProvider;
+        }
+
+        public void setHeaderViews(ArrayList<View> headerViews) {
+            mHeaderViews = headerViews;
+        }
+
+        @Override
+        public boolean shouldHideDivider(int position, RecyclerView parent) {
+            if(mHeaderViews != null && mHeaderViews.size()>0){
+                for(int i = 0;i<mHeaderViews.size();i++){
+                    if(position == i) {
+                        return true;
+                    }
+                }
+            }
+            return visibilityProvider.shouldHideDivider(position,parent);
+        }
     }
 
     /**

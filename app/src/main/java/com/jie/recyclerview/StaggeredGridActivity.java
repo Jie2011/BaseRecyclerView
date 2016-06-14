@@ -3,7 +3,6 @@ package com.jie.recyclerview;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -11,8 +10,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.jie.recyclerview.library.view.ProgressStyle;
+import com.jie.recyclerview.library.divider.HorizontalDividerFactory;
+import com.jie.recyclerview.library.divider.VerticalDividerFactory;
 import com.jie.recyclerview.library.view.CustomRecyclerView;
+import com.jie.recyclerview.library.view.ProgressStyle;
 
 import java.util.ArrayList;
 
@@ -29,7 +30,6 @@ public class StaggeredGridActivity extends Activity {
         mRecyclerView = (CustomRecyclerView)this.findViewById(R.id.recyclerview);
         StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager( 3,
                 StaggeredGridLayoutManager.VERTICAL);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
 
         mRecyclerView.setRefreshProgressStyle(ProgressStyle.BallSpinFadeLoader);
@@ -38,7 +38,8 @@ public class StaggeredGridActivity extends Activity {
 
         View header =   LayoutInflater.from(this).inflate(R.layout.recyclerview_header, (ViewGroup)findViewById(android.R.id.content),false);
         mRecyclerView.addHeaderView(header);
-
+        mRecyclerView.addItemDecoration(VerticalDividerFactory.newInstance(this).createDividerByColorId(R.color.colorPrimaryDark, 1, false));
+        mRecyclerView.addItemDecoration(HorizontalDividerFactory.newInstance(this).createDividerByColorId(R.color.colorPrimaryDark, 1, false));
         mRecyclerView.setLoadingListener(new CustomRecyclerView.LoadingListener() {
             @Override
             public void onRefresh() {

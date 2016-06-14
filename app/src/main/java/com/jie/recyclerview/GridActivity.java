@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,8 +13,8 @@ import android.view.ViewGroup;
 
 import com.jie.recyclerview.library.divider.HorizontalDividerFactory;
 import com.jie.recyclerview.library.divider.VerticalDividerFactory;
-import com.jie.recyclerview.library.view.ProgressStyle;
 import com.jie.recyclerview.library.view.CustomRecyclerView;
+import com.jie.recyclerview.library.view.ProgressStyle;
 
 import java.util.ArrayList;
 
@@ -30,7 +31,7 @@ public class GridActivity extends Activity {
         setContentView(R.layout.activity_recyclerview);
         mRecyclerView = (CustomRecyclerView)this.findViewById(R.id.recyclerview);
         GridLayoutManager layoutManager = new GridLayoutManager(this,3);
-
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(layoutManager);
 
         mRecyclerView.setRefreshProgressStyle(ProgressStyle.BallSpinFadeLoader);
@@ -39,8 +40,8 @@ public class GridActivity extends Activity {
 
         View header =   LayoutInflater.from(this).inflate(R.layout.recyclerview_header, (ViewGroup)findViewById(android.R.id.content),false);
         mRecyclerView.addHeaderView(header);
-        mRecyclerView.addItemDecoration(VerticalDividerFactory.newInstance(this).createDividerByColorId(R.color.colorPrimaryDark,1,false));
-        mRecyclerView.addItemDecoration(HorizontalDividerFactory.newInstance(this).createDividerByColorId(R.color.colorPrimaryDark,1,true));
+        mRecyclerView.addItemDecoration(VerticalDividerFactory.newInstance(this).createDividerByColorId(R.color.colorPrimaryDark, 1, false));
+        mRecyclerView.addItemDecoration(HorizontalDividerFactory.newInstance(this).createDividerByColorId(R.color.colorPrimaryDark,1,false));
         mRecyclerView.setLoadingListener(new CustomRecyclerView.LoadingListener() {
             @Override
             public void onRefresh() {
@@ -87,7 +88,7 @@ public class GridActivity extends Activity {
         });
 
         listData = new  ArrayList<String>();
-        for(int i = 0; i < 20 ;i++){
+        for(int i = 0; i < 5 ;i++){
             listData.add("item" + (i + listData.size()) );
         }
         mAdapter = new MyAdapter(this,listData);
