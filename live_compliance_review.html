@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>直播智能审核 · 数据中心专用专业版</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --brand: #3b5bdb;
+  --brand-light: #eff2ff;
+  --brand-hover: #364fc7;
+  --bg-page: #f4f5f9;
+  --bg-card: #ffffff;
+  --bg-sidebar: #ffffff;
+  --bg-topbar: #ffffff;
+  --border: #e8e9f0;
+  --border-light: #f0f1f6;
+  --text-primary: #1a1d2e;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --text-brand: #3b5bdb;
+  --radius-sm: 5px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-drawer: -8px 0 32px rgba(0,0,0,.10);
+  --status-pending-bg: #fff8e1; --status-pending-text: #d97706;
+  --status-aiwarn-bg: #fff3e0; --status-aiwarn-text: #c2410c;
+  --status-aiok-bg: #ecfdf5; --status-aiok-text: #059669;
+  --status-passed-bg: #eff6ff; --status-passed-text: #2563eb;
+  --status-rejected-bg: #fef2f2; --status-rejected-text: #dc2626;
+  --status-reviewing-bg: #f5f3ff; --status-reviewing-text: #7c3aed;
+}
+
+html, body {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Layout ── */
+.app { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+/* ── Topbar ── */
+.topbar {
+  height: 46px;
+  background: var(--bg-topbar);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  gap: 0;
+  flex-shrink: 0;
+  z-index: 10;
+}
+.topbar-logo {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand);
+  margin-right: 10px;
+  white-space: nowrap;
+  letter-spacing: -.2px;
+}
+.topbar-badge {
+  font-size: 10px;
+  background: #fff3e0;
+  color: #d97706;
+  border-radius: 10px;
+  padding: 2px 7px;
+  margin-right: 18px;
+  font-weight: 500;
+}
+.topbar-nav { display: flex; gap: 0; flex: 1; }
+.nav-item {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  padding: 0 12px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color .15s;
+}
+.nav-item:hover { color: var(--text-primary); }
+.nav-item.active { color: var(--brand); border-bottom-color: var(--brand); font-weight: 500; }
+.topbar-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.ai-btn {
+  font-size: 11.5px;
+  background: var(--brand-light);
+  color: var(--brand);
+  border-radius: 14px;
+  padding: 4px 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background .15s;
+}
+.ai-btn:hover { background: #dee6ff; }
+.avatar {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--brand);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: #fff; font-weight: 600;
+  cursor: pointer;
+}
+
+/* ── Body ── */
+.body-wrap { display: flex; flex: 1; min-height: 0; }
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 152px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  padding: 10px 0;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+.side-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background .12s, color .12s;
+  border-right: 2px solid transparent;
+}
+.side-item:hover { background: #f7f8fc; color: var(--text-primary); }
+.side-item.active {
+  color: var(--brand);
+  background: var(--brand-light);
+  border-right-color: var(--brand);
+  font-weight: 500;
+}
+.side-icon {
+  width: 15px; height: 15px;
+  flex-shrink: 0;
+  opacity: .55;
+}
+.side-item.active .side-icon { opacity: 1; }
+
+/* ── Main ── */
+.main {
+  flex: 1;
+  padding: 20px 22px;
+  overflow-y: auto;
+  min-width: 0;
+}
+
+/* ── Page Header ── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.page-title { font-size: 16px; font-weight: 600; color: var(--text-primary); letter-spacing: -.3px; }
+.btn-primary {
+  height: 32px;
+  padding: 0 16px;
+  background: var(--brand);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background .15s, transform .1s;
+  white-space: nowrap;
+}
+.btn-primary:hover { background: var(--brand-hover); }
+.btn-primary:active { transform: scale(.98); }
+.btn-primary svg { width: 14px; height: 14px; }
+
+/* ── Tab Bar ── */
+.tab-bar {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 18px;
+  gap: 0;
+}
+.tab {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color .15s;
+  white-space: nowrap;
+}
+.tab:hover { color: var(--text-primary); }
+.tab.active { color: var(--brand); border-bottom-color: var(--brand); font-weight: 500; }
+
+/* ── Card ── */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+/* ── Table Section Header ── */
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid var(--border-light);
+}
+.table-header-title { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+.filter-row { display: flex; gap: 8px; align-items: center; }
+.filter-select {
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0 28px 0 10px;
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath d='M2 3.5l3 3 3-3' stroke='%239ca3af' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 8px center;
+  appearance: none;
+  cursor: pointer;
+  outline: none;
+  transition: border-color .15s;
+}
+.filter-select:focus { border-color: var(--brand); }
+
+/* ── Table ── */
+.table-wrap { overflow-x: auto; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+thead th {
+  text-align: left;
+  padding: 9px 16px;
+  color: var(--text-muted);
+  font-weight: 400;
+  font-size: 11.5px;
+  background: #fafbfc;
+  border-bottom: 1px solid var(--border-light);
+  white-space: nowrap;
+}
+tbody td {
+  padding: 11px 16px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-light);
+  vertical-align: middle;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr.data-row { cursor: pointer; transition: background .1s; }
+tbody tr.data-row:hover td { background: #f9faff; }
+.cell-title { font-size: 12.5px; color: var(--text-primary); font-weight: 500; }
+.cell-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+/* ── Badges ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.badge-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.badge-pending { background: var(--status-pending-bg); color: var(--status-pending-text); }
+.badge-pending .badge-dot { background: var(--status-pending-text); }
+.badge-aiwarn { background: var(--status-aiwarn-bg); color: var(--status-aiwarn-text); }
+.badge-aiwarn .badge-dot { background: var(--status-aiwarn-text); }
+.badge-aiok { background: var(--status-aiok-bg); color: var(--status-aiok-text); }
+.badge-aiok .badge-dot { background: var(--status-aiok-text); }
+.badge-passed { background: var(--status-passed-bg); color: var(--status-passed-text); }
+.badge-passed .badge-dot { background: var(--status-passed-text); }
+.badge-rejected { background: var(--status-rejected-bg); color: var(--status-rejected-text); }
+.badge-rejected .badge-dot { background: var(--status-rejected-text); }
+.badge-reviewing { background: var(--status-reviewing-bg); color: var(--status-reviewing-text); }
+.badge-reviewing .badge-dot { background: var(--status-reviewing-text); }
+
+/* ── Action Links ── */
+.action-wrap { display: flex; gap: 10px; align-items: center; }
+.action-link {
+  font-size: 12px;
+  color: var(--brand);
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity .15s;
+}
+.action-link:hover { opacity: .75; }
+.action-link.danger { color: #dc2626; }
+.action-link.muted { color: var(--text-muted); cursor: default; }
+
+/* ── Expand Detail Row ── */
+.detail-row { background: #f7f8fc; }
+.detail-row td { padding: 14px 18px; border-bottom: 1px solid var(--border-light); }
+.detail-inner { max-width: 760px; }
+
+.ai-result-block {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+.ai-result-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+.ai-result-header svg { width: 13px; height: 13px; flex-shrink: 0; }
+.risk-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+.risk-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.risk-tag-warn { background: var(--status-aiwarn-bg); color: var(--status-aiwarn-text); }
+.risk-tag-ok { background: var(--status-aiok-bg); color: var(--status-aiok-text); }
+.risk-tag-info { background: var(--brand-light); color: var(--brand); }
+
+.review-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+.review-label { font-size: 11.5px; color: var(--text-muted); }
+.btn-pass {
+  height: 26px; padding: 0 12px;
+  background: var(--brand); color: #fff;
+  border: none; border-radius: var(--radius-sm);
+  font-size: 11.5px; font-weight: 500; cursor: pointer;
+  transition: background .15s;
+}
+.btn-pass:hover { background: var(--brand-hover); }
+.btn-reject {
+  height: 26px; padding: 0 12px;
+  background: #fff; color: #dc2626;
+  border: 1px solid #fca5a5;
+  border-radius: var(--radius-sm);
+  font-size: 11.5px; font-weight: 500; cursor: pointer;
+  transition: background .15s;
+}
+.btn-reject:hover { background: #fef2f2; }
+
+.reject-block {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  margin-top: 10px;
+}
+.reject-block-label { font-size: 11.5px; font-weight: 500; color: #dc2626; margin-bottom: 6px; }
+.reject-textarea {
+  width: 100%; height: 60px;
+  border: 1px solid #fca5a5;
+  border-radius: var(--radius-sm);
+  padding: 7px 9px;
+  font-size: 12px; color: var(--text-primary);
+  resize: none; background: #fff; outline: none;
+  font-family: inherit;
+  transition: border-color .15s;
+}
+.reject-textarea:focus { border-color: #dc2626; }
+.reject-block-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 7px; }
+
+.reject-display {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+}
+.reject-display-label { font-size: 11px; color: #dc2626; font-weight: 500; margin-bottom: 4px; }
+.reject-display-text { font-size: 12px; color: #6b7280; line-height: 1.6; }
+
+/* ── Pagination ── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 18px;
+  border-top: 1px solid var(--border-light);
+}
+.pagination-info { font-size: 11.5px; color: var(--text-muted); }
+.pagination-btns { display: flex; gap: 4px; }
+.pg-btn {
+  height: 24px; padding: 0 9px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #fff; color: var(--text-secondary);
+  font-size: 11.5px; cursor: pointer;
+  transition: background .12s;
+}
+.pg-btn:hover { background: #f4f5f9; }
+.pg-btn.active { background: var(--brand-light); color: var(--brand); border-color: #c5cff5; font-weight: 500; }
+
+/* ── Overlay ── */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(15,17,30,.35);
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .28s ease;
+}
+.overlay.show { opacity: 1; pointer-events: all; }
+
+/* ── Drawer ── */
+.drawer {
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  width: 520px;
+  background: #fff;
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform .3s cubic-bezier(.4,0,.2,1);
+  box-shadow: var(--shadow-drawer);
+}
+.drawer.open { transform: translateX(0); }
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 22px;
+  height: 54px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.drawer-title { font-size: 15px; font-weight: 600; color: var(--text-primary); letter-spacing: -.2px; }
+.drawer-close {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted);
+  transition: background .15s, color .15s;
+}
+.drawer-close:hover { background: #f3f4f6; color: var(--text-primary); }
+.drawer-close svg { width: 16px; height: 16px; }
+
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 22px 22px 10px;
+}
+
+.drawer-section { margin-bottom: 22px; }
+.drawer-section-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.form-row { display: flex; gap: 12px; margin-bottom: 14px; }
+.form-row:last-child { margin-bottom: 0; }
+.form-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 0; }
+.form-group.half { flex: 0 0 calc(50% - 6px); }
+.form-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+.form-label .req { color: #dc2626; margin-left: 2px; }
+.form-input, .form-select-full {
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0 11px;
+  font-size: 12.5px;
+  color: var(--text-primary);
+  background: #fff;
+  outline: none;
+  font-family: inherit;
+  transition: border-color .15s, box-shadow .15s;
+  width: 100%;
+}
+.form-input:focus, .form-select-full:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(59,91,219,.1);
+}
+.form-select-full {
+  appearance: none;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5l3.5 3.5 3.5-3.5' stroke='%239ca3af' stroke-width='1.3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+  cursor: pointer;
+  padding-right: 30px;
+}
+
+/* ── Upload Area ── */
+.upload-area {
+  border: 1.5px dashed #c7cde8;
+  border-radius: var(--radius-md);
+  background: #fafbff;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  text-align: center;
+  min-height: 80px;
+}
+.upload-area:hover { border-color: var(--brand); background: var(--brand-light); }
+.upload-area.has-file { border-style: solid; border-color: #93c5fd; background: #eff6ff; }
+.upload-area-icon { color: #93c5fd; }
+.upload-area-icon svg { width: 22px; height: 22px; }
+.upload-area-has-icon { color: #2563eb; }
+.upload-area-has-icon svg { width: 20px; height: 20px; }
+.upload-area-text { font-size: 12px; color: var(--text-secondary); }
+.upload-area-text strong { color: var(--brand); }
+.upload-area-hint { font-size: 11px; color: var(--text-muted); }
+.upload-area-filename { font-size: 12px; color: #1d4ed8; font-weight: 500; }
+.upload-input { display: none; }
+
+/* ── Drawer Footer ── */
+.drawer-footer {
+  padding: 14px 22px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-shrink: 0;
+  background: #fff;
+}
+.btn-ghost {
+  height: 34px; padding: 0 16px;
+  background: #fff; color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 12.5px; font-weight: 500; cursor: pointer;
+  transition: background .15s;
+}
+.btn-ghost:hover { background: #f4f5f9; }
+.btn-submit {
+  height: 34px; padding: 0 22px;
+  background: var(--brand); color: #fff;
+  border: none; border-radius: var(--radius-md);
+  font-size: 12.5px; font-weight: 500; cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  transition: background .15s, transform .1s;
+}
+.btn-submit:hover { background: var(--brand-hover); }
+.btn-submit:active { transform: scale(.98); }
+.btn-sm {
+  height: 26px; padding: 0 11px;
+  border-radius: 5px;
+  font-size: 11.5px; font-weight: 500; cursor: pointer;
+  border: 1px solid var(--border);
+  background: #fff; color: var(--text-secondary);
+  transition: background .12s;
+}
+.btn-sm:hover { background: #f4f5f9; }
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  top: 20px; left: 50%;
+  transform: translateX(-50%) translateY(-60px);
+  background: #1a1d2e;
+  color: #fff;
+  padding: 9px 18px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 500;
+  z-index: 200;
+  display: flex; align-items: center; gap: 7px;
+  transition: transform .3s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 4px 16px rgba(0,0,0,.2);
+  white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast-icon { width: 14px; height: 14px; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <span class="topbar-logo">数据中心专用专业版</span>
+    <span class="topbar-badge">银牌商家</span>
+    <nav class="topbar-nav">
+      <div class="nav-item">工作台</div>
+      <div class="nav-item">课程</div>
+      <div class="nav-item active">直播</div>
+      <div class="nav-item">商城</div>
+      <div class="nav-item">SCRM</div>
+      <div class="nav-item">交易</div>
+      <div class="nav-item">用户</div>
+      <div class="nav-item">数据</div>
+      <div class="nav-item">设置</div>
+    </nav>
+    <div class="topbar-right">
+      <button class="ai-btn">有问题，找AI管家</button>
+      <div class="avatar">李</div>
+    </div>
+  </div>
+
+  <div class="body-wrap">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="side-item">
+        <svg class="side-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 8h6M5 5h6M5 11h3"/></svg>
+        新建直播
+      </div>
+      <div class="side-item">
+        <svg class="side-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="M5 6h6M5 9h4"/></svg>
+        直播管理
+      </div>
+      <div class="side-item">
+        <svg class="side-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12L4 4l4 6 3-4 3 6"/></svg>
+        直播数据
+      </div>
+      <div class="side-item active">
+        <svg class="side-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M13 6.5A5 5 0 1 1 6 2"/><path d="M13 2l-5 5M10 2h3v3"/></svg>
+        直播智能审核
+      </div>
+      <div class="side-item">
+        <svg class="side-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="4" width="12" height="9" rx="1.5"/><path d="M5 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1"/></svg>
+        直播中控台
+      </div>
+      <div class="side-item">
+        <svg class="side-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 12V5l5-3 5 3v7"/><rect x="6" y="9" width="4" height="3"/></svg>
+        软件下载
+      </div>
+      <div class="side-item">
+        <svg class="side-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="5.5"/><circle cx="8" cy="8" r="2"/></svg>
+        通用设置
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+
+      <div class="page-header">
+        <span class="page-title">直播智能审核</span>
+        <button class="btn-primary" onclick="openDrawer()">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3v10M3 8l5-5 5 5"/></svg>
+          上传直播资料
+        </button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tab-bar">
+        <div class="tab active">事前审核</div>
+        <div class="tab">事中审核</div>
+        <div class="tab">事后审核</div>
+      </div>
+
+      <!-- Records Card -->
+      <div class="card">
+        <div class="table-header">
+          <span class="table-header-title">审核记录</span>
+          <div class="filter-row">
+            <select class="filter-select">
+              <option>全部状态</option>
+              <option>待AI审核</option>
+              <option>AI审核中</option>
+              <option>人工复审中</option>
+              <option>已通过</option>
+              <option>已驳回</option>
+            </select>
+            <select class="filter-select">
+              <option>全部讲师</option>
+              <option>王明</option>
+              <option>李芳</option>
+              <option>张超</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:26%">直播主题</th>
+                <th style="width:10%">讲师</th>
+                <th style="width:13%">直播时间</th>
+                <th style="width:13%">提交时间</th>
+                <th style="width:11%">AI 审核</th>
+                <th style="width:11%">审核状态</th>
+                <th style="width:16%">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+
+              <!-- Row 1: 人工复审中 -->
+              <tr class="data-row" onclick="toggleDetail('d1', this)">
+                <td>
+                  <div class="cell-title">2024年Q4理财规划专题直播</div>
+                  <div class="cell-sub">口播稿 · 课件</div>
+                </td>
+                <td>王明</td>
+                <td>05-10 14:00</td>
+                <td style="color:var(--text-muted)">05-06 09:12</td>
+                <td><span class="badge badge-aiwarn"><span class="badge-dot"></span>有风险</span></td>
+                <td><span class="badge badge-reviewing"><span class="badge-dot"></span>人工复审中</span></td>
+                <td>
+                  <div class="action-wrap">
+                    <span class="action-link" onclick="event.stopPropagation();toggleDetail('d1',this.closest('tr').previousElementSibling||this.closest('tr'))">查看详情</span>
+                  </div>
+                </td>
+              </tr>
+              <tr class="detail-row" id="d1" style="display:none">
+                <td colspan="7">
+                  <div class="detail-inner">
+                    <div class="ai-result-block">
+                      <div class="ai-result-header">
+                        <svg viewBox="0 0 16 16" fill="none" stroke="#c2410c" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3.5M8 11v.5"/></svg>
+                        AI 审核结果 · 口播稿
+                        <span class="badge badge-aiwarn" style="margin-left:4px">发现 3 处风险词</span>
+                      </div>
+                      <div style="font-size:12px;color:var(--text-secondary);margin-bottom:6px">以下内容存在合规风险，建议修改后重新提交：</div>
+                      <div class="risk-tags">
+                        <span class="risk-tag risk-tag-warn">保本保收益（第3段）</span>
+                        <span class="risk-tag risk-tag-warn">稳赚不赔（第7段）</span>
+                        <span class="risk-tag risk-tag-warn">历史收益达20%（第11段）</span>
+                      </div>
+                    </div>
+                    <div class="ai-result-block" style="margin-bottom:10px">
+                      <div class="ai-result-header">
+                        <svg viewBox="0 0 16 16" fill="none" stroke="#059669" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5 8l2.5 2.5L11 5.5"/></svg>
+                        AI 审核结果 · 课件
+                        <span class="badge badge-aiok" style="margin-left:4px">无风险</span>
+                      </div>
+                      <div style="font-size:12px;color:var(--text-muted)">课件内容未发现违规表述，合规风险低。</div>
+                    </div>
+                    <div id="reject-block-d1" style="display:none">
+                      <div class="reject-block">
+                        <div class="reject-block-label">填写驳回意见（讲师将收到通知）</div>
+                        <textarea class="reject-textarea" id="reject-text-d1" placeholder="请说明驳回原因，例如：第3段"保本保收益"属违规表述，请删除后重新提交口播稿…"></textarea>
+                        <div class="reject-block-actions">
+                          <button class="btn-sm" onclick="hideRejectBlock('d1')">取消</button>
+                          <button class="btn-sm" style="background:#dc2626;color:#fff;border-color:#dc2626" onclick="confirmReject('d1')">确认驳回</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="review-bar">
+                      <span class="review-label">人工复审：</span>
+                      <button class="btn-pass" onclick="event.stopPropagation();showToast('success','已标记通过，审核完成')">仍然通过</button>
+                      <button class="btn-reject" onclick="event.stopPropagation();showRejectBlock('d1')">驳回</button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Row 2: 已通过 -->
+              <tr class="data-row" onclick="toggleDetail('d2', this)">
+                <td>
+                  <div class="cell-title">基金定投入门知识科普</div>
+                  <div class="cell-sub">口播稿</div>
+                </td>
+                <td>李芳</td>
+                <td>05-08 10:30</td>
+                <td style="color:var(--text-muted)">05-04 16:40</td>
+                <td><span class="badge badge-aiok"><span class="badge-dot"></span>无风险</span></td>
+                <td><span class="badge badge-passed"><span class="badge-dot"></span>已通过</span></td>
+                <td>
+                  <div class="action-wrap">
+                    <span class="action-link">查看详情</span>
+                  </div>
+                </td>
+              </tr>
+              <tr class="detail-row" id="d2" style="display:none">
+                <td colspan="7">
+                  <div class="detail-inner">
+                    <div class="ai-result-block" style="margin-bottom:0">
+                      <div class="ai-result-header">
+                        <svg viewBox="0 0 16 16" fill="none" stroke="#059669" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5 8l2.5 2.5L11 5.5"/></svg>
+                        AI 审核结果 · 口播稿
+                        <span class="badge badge-aiok" style="margin-left:4px">全部通过</span>
+                      </div>
+                      <div style="font-size:12px;color:var(--text-muted);margin-top:4px">未发现违规表述，合规风险低。人工复审已确认通过。</div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Row 3: 已驳回 -->
+              <tr class="data-row" onclick="toggleDetail('d3', this)">
+                <td>
+                  <div class="cell-title">股票投资策略解析直播</div>
+                  <div class="cell-sub">口播稿 · 课件</div>
+                </td>
+                <td>王明</td>
+                <td>05-15 19:00</td>
+                <td style="color:var(--text-muted)">05-06 11:05</td>
+                <td><span class="badge badge-aiwarn"><span class="badge-dot"></span>有风险</span></td>
+                <td><span class="badge badge-rejected"><span class="badge-dot"></span>已驳回</span></td>
+                <td>
+                  <div class="action-wrap">
+                    <span class="action-link">查看详情</span>
+                    <span class="action-link" onclick="event.stopPropagation();openDrawerWithPrefill('股票投资策略解析直播','王明')">重新提交</span>
+                  </div>
+                </td>
+              </tr>
+              <tr class="detail-row" id="d3" style="display:none">
+                <td colspan="7">
+                  <div class="detail-inner">
+                    <div class="ai-result-block">
+                      <div class="ai-result-header">
+                        <svg viewBox="0 0 16 16" fill="none" stroke="#c2410c" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3.5M8 11v.5"/></svg>
+                        AI 审核结果 · 口播稿
+                        <span class="badge badge-aiwarn" style="margin-left:4px">发现 2 处风险词</span>
+                      </div>
+                      <div class="risk-tags">
+                        <span class="risk-tag risk-tag-warn">精准预测涨跌（第5段）</span>
+                        <span class="risk-tag risk-tag-warn">内部消息（第9段）</span>
+                      </div>
+                    </div>
+                    <div class="reject-display">
+                      <div class="reject-display-label">驳回意见 · 合规专员 · 05-06 15:30</div>
+                      <div class="reject-display-text">第5段"精准预测涨跌"及第9段"内部消息"为严重违规表述，涉嫌误导投资者，请删除相关内容后重新提交口播稿。课件无需重传，可在重新提交时勾选沿用。</div>
+                    </div>
+                    <div style="margin-top:10px;display:flex;align-items:center;gap:8px">
+                      <span style="font-size:12px;color:var(--text-muted)">口播稿需重新上传，课件可沿用上一次。</span>
+                      <button class="btn-pass" style="font-size:11.5px;height:26px;padding:0 12px" onclick="event.stopPropagation();openDrawerWithPrefill('股票投资策略解析直播','王明')">去重新提交</button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Row 4: 待审核 -->
+              <tr class="data-row" onclick="toggleDetail('d4', this)">
+                <td>
+                  <div class="cell-title">债券基础知识入门</div>
+                  <div class="cell-sub">口播稿</div>
+                </td>
+                <td>李芳</td>
+                <td>05-20 15:00</td>
+                <td style="color:var(--text-muted)">05-06 14:22</td>
+                <td><span class="badge badge-pending"><span class="badge-dot"></span>排队中</span></td>
+                <td><span class="badge badge-pending"><span class="badge-dot"></span>待AI审核</span></td>
+                <td>
+                  <div class="action-wrap">
+                    <span class="action-link muted">等待审核</span>
+                  </div>
+                </td>
+              </tr>
+              <tr class="detail-row" id="d4" style="display:none">
+                <td colspan="7">
+                  <div class="detail-inner">
+                    <div style="display:flex;align-items:center;gap:8px;padding:8px 0;font-size:12.5px;color:var(--text-muted)">
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#d97706" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3.5L10 10"/></svg>
+                      资料已提交，AI 正在排队审核中，预计 3 分钟内完成...
+                    </div>
+                  </div>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination">
+          <span class="pagination-info">共 4 条记录</span>
+          <div class="pagination-btns">
+            <button class="pg-btn">上一页</button>
+            <button class="pg-btn active">1</button>
+            <button class="pg-btn">下一页</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+
+<!-- Right Drawer -->
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <span class="drawer-title">上传直播资料</span>
+    <button class="drawer-close" onclick="closeDrawer()">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3l10 10M13 3L3 13"/></svg>
+    </button>
+  </div>
+
+  <div class="drawer-body">
+
+    <!-- Section 1: 基本信息 -->
+    <div class="drawer-section">
+      <div class="drawer-section-title">基本信息</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">直播主题<span class="req">*</span></label>
+          <input class="form-input" id="field-topic" type="text" placeholder="请输入本场直播主题">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group half">
+          <label class="form-label">直播时间<span class="req">*</span></label>
+          <input class="form-input" id="field-time" type="datetime-local">
+        </div>
+        <div class="form-group half">
+          <label class="form-label">直播讲师<span class="req">*</span></label>
+          <select class="form-select-full" id="field-lecturer">
+            <option value="">请选择讲师</option>
+            <option value="王明">王明（高级理财师）</option>
+            <option value="李芳">李芳（投资顾问）</option>
+            <option value="张超">张超（基金分析师）</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: 审核材料 -->
+    <div class="drawer-section">
+      <div class="drawer-section-title">审核材料</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">口播稿<span class="req">*</span></label>
+          <div class="upload-area" id="upload-script-area" onclick="document.getElementById('upload-script').click()">
+            <input class="upload-input" type="file" id="upload-script" accept=".doc,.docx,.txt,.pdf" onchange="handleFileSelect('script', this)">
+            <div class="upload-area-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            </div>
+            <div class="upload-area-text"><strong>点击上传口播稿</strong></div>
+            <div class="upload-area-hint">支持 .doc / .docx / .txt，大小不超过 20MB</div>
+          </div>
+          <div id="script-prefill-notice" style="display:none;margin-top:6px;padding:7px 10px;background:#eff6ff;border-radius:6px;font-size:11.5px;color:#1d4ed8;border:1px solid #bfdbfe">
+            上一次提交的口播稿内容已带入，可直接重新上传修改后的文件覆盖。
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">课件<span style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:4px">（选填）</span></label>
+          <div class="upload-area" id="upload-slide-area" onclick="document.getElementById('upload-slide').click()">
+            <input class="upload-input" type="file" id="upload-slide" accept=".ppt,.pptx,.pdf" onchange="handleFileSelect('slide', this)">
+            <div class="upload-area-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+            </div>
+            <div class="upload-area-text"><strong>点击上传课件</strong></div>
+            <div class="upload-area-hint">支持 .ppt / .pptx / .pdf，大小不超过 50MB</div>
+          </div>
+          <div id="slide-prefill-notice" style="display:none;margin-top:6px;padding:7px 10px;background:#f0fdf4;border-radius:6px;font-size:11.5px;color:#15803d;border:1px solid #bbf7d0">
+            <span style="font-weight:500">可沿用上一次课件</span>，无需重新上传，若有更新请点击上方区域重新选择文件。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: 备注 -->
+    <div class="drawer-section">
+      <div class="drawer-section-title">补充说明</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">备注<span style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:4px">（选填）</span></label>
+          <textarea class="form-input" id="field-note" style="height:68px;resize:none;padding-top:9px;line-height:1.5" placeholder="如有特殊情况或补充说明，请在此填写…"></textarea>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="drawer-footer">
+    <button class="btn-ghost" onclick="closeDrawer()">取消</button>
+    <button class="btn-submit" onclick="submitForm()">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" style="width:13px;height:13px"><path d="M3 8l5 5 5-5M8 3v10"/></svg>
+      提交审核
+    </button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <svg class="toast-icon" viewBox="0 0 16 16" fill="none" stroke="#4ade80" stroke-width="1.8" id="toast-icon"><circle cx="8" cy="8" r="6"/><path d="M5 8l2.5 2.5L11 5.5"/></svg>
+  <span id="toast-msg">操作成功</span>
+</div>
+
+<script>
+  function openDrawer() {
+    document.getElementById('overlay').classList.add('show');
+    document.getElementById('drawer').classList.add('open');
+    resetForm();
+  }
+
+  function openDrawerWithPrefill(topic, lecturer) {
+    document.getElementById('overlay').classList.add('show');
+    document.getElementById('drawer').classList.add('open');
+    resetForm();
+    setTimeout(function() {
+      document.getElementById('field-topic').value = topic;
+      var sel = document.getElementById('field-lecturer');
+      for (var i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].value === lecturer) { sel.selectedIndex = i; break; }
+      }
+      document.getElementById('script-prefill-notice').style.display = 'block';
+      document.getElementById('slide-prefill-notice').style.display = 'block';
+    }, 50);
+  }
+
+  function closeDrawer() {
+    document.getElementById('overlay').classList.remove('show');
+    document.getElementById('drawer').classList.remove('open');
+  }
+
+  function resetForm() {
+    document.getElementById('field-topic').value = '';
+    document.getElementById('field-time').value = '';
+    document.getElementById('field-lecturer').selectedIndex = 0;
+    document.getElementById('field-note').value = '';
+    document.getElementById('script-prefill-notice').style.display = 'none';
+    document.getElementById('slide-prefill-notice').style.display = 'none';
+    resetUploadArea('script');
+    resetUploadArea('slide');
+  }
+
+  function handleFileSelect(type, input) {
+    if (!input.files || !input.files[0]) return;
+    var file = input.files[0];
+    var area = document.getElementById('upload-' + type + '-area');
+    area.classList.add('has-file');
+    area.innerHTML = '<input class="upload-input" type="file" id="upload-' + type + '" onchange="handleFileSelect(\'' + type + '\', this)">'
+      + '<div class="upload-area-has-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.5" width="20" height="20"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>'
+      + '<div class="upload-area-filename">' + escapeHtml(file.name) + '</div>'
+      + '<div class="upload-area-hint" style="color:#60a5fa">点击重新选择</div>';
+  }
+
+  function resetUploadArea(type) {
+    var area = document.getElementById('upload-' + type + '-area');
+    if (!area) return;
+    area.classList.remove('has-file');
+    if (type === 'script') {
+      area.innerHTML = '<input class="upload-input" type="file" id="upload-script" accept=".doc,.docx,.txt,.pdf" onchange="handleFileSelect(\'script\', this)">'
+        + '<div class="upload-area-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg></div>'
+        + '<div class="upload-area-text"><strong>点击上传口播稿</strong></div>'
+        + '<div class="upload-area-hint">支持 .doc / .docx / .txt，大小不超过 20MB</div>';
+    } else {
+      area.innerHTML = '<input class="upload-input" type="file" id="upload-slide" accept=".ppt,.pptx,.pdf" onchange="handleFileSelect(\'slide\', this)">'
+        + '<div class="upload-area-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="22" height="22"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>'
+        + '<div class="upload-area-text"><strong>点击上传课件</strong></div>'
+        + '<div class="upload-area-hint">支持 .ppt / .pptx / .pdf，大小不超过 50MB</div>';
+    }
+  }
+
+  function submitForm() {
+    var topic = document.getElementById('field-topic').value.trim();
+    var time = document.getElementById('field-time').value;
+    var lecturer = document.getElementById('field-lecturer').value;
+    if (!topic) { showToast('error', '请填写直播主题'); return; }
+    if (!time) { showToast('error', '请选择直播时间'); return; }
+    if (!lecturer) { showToast('error', '请选择直播讲师'); return; }
+    closeDrawer();
+    showToast('success', '资料提交成功，AI 审核中…');
+  }
+
+  function toggleDetail(id, row) {
+    var detail = document.getElementById(id);
+    if (!detail) return;
+    var isOpen = detail.style.display !== 'none';
+    var allDetails = document.querySelectorAll('.detail-row');
+    allDetails.forEach(function(d) { d.style.display = 'none'; });
+    if (!isOpen) detail.style.display = 'table-row';
+  }
+
+  function showRejectBlock(id) {
+    var block = document.getElementById('reject-block-' + id);
+    if (block) block.style.display = 'block';
+  }
+
+  function hideRejectBlock(id) {
+    var block = document.getElementById('reject-block-' + id);
+    if (block) block.style.display = 'none';
+  }
+
+  function confirmReject(id) {
+    var text = document.getElementById('reject-text-' + id);
+    if (!text || !text.value.trim()) { showToast('error', '请填写驳回意见'); return; }
+    showToast('success', '已驳回，讲师将收到通知');
+    hideRejectBlock(id);
+    document.getElementById(id).style.display = 'none';
+  }
+
+  function showToast(type, msg) {
+    var toast = document.getElementById('toast');
+    var icon = document.getElementById('toast-icon');
+    document.getElementById('toast-msg').textContent = msg;
+    if (type === 'error') {
+      icon.innerHTML = '<circle cx="8" cy="8" r="6"/><path d="M5.5 5.5l5 5M10.5 5.5l-5 5"/>';
+      icon.style.stroke = '#f87171';
+    } else {
+      icon.innerHTML = '<circle cx="8" cy="8" r="6"/><path d="M5 8l2.5 2.5L11 5.5"/>';
+      icon.style.stroke = '#4ade80';
+    }
+    toast.classList.add('show');
+    setTimeout(function() { toast.classList.remove('show'); }, 2800);
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeDrawer();
+  });
+</script>
+</body>
+</html>
